@@ -46,4 +46,4 @@ jobs:
 
       - name: Run Python tests
         run: |
-          pytest -vv -ra --tb=short
+          PYTHONPATH=. pytest -vv -ra --tb=short
