@@ -1,0 +1,10 @@
+Name                      Stmts   Miss  Cover   Missing
+-------------------------------------------------------
+src/aiops_pipeline.py        36     13    64%   42-58
+src/anomaly_detector.py      18      0   100%
+src/calculations.py          16      0   100%
+src/event_consumer.py         6      0   100%
+src/event_producer.py         9      0   100%
+src/event_topic.py           10      0   100%
+-------------------------------------------------------
+TOTAL                        95     13    86%
