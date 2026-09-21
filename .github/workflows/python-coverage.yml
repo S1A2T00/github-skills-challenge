@@ -51,7 +51,7 @@ jobs:
         run: |
           set +e
 
-          pytest -vv -ra --tb=short \
+          PYTHONPATH=src:. pytest -vv -ra --tb=short \
             --cov=src \
             --cov-report=term-missing \
             --cov-report=xml \

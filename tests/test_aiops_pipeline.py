@@ -42,6 +42,37 @@ def test_anomalous_record_is_detected():
     assert event["type"] == "ANOMALY"
 
 
+def test_anomaly_detector_reports_each_threshold_and_warning():
+    detector = AnomalyDetector()
+
+    record = {
+        "timestamp": "2026-09-20T10:06:00",
+        "service": "payment-service",
+        "response_time_ms": 601,
+        "cpu_percent": 81,
+        "memory_percent": 81,
+        "log_level": "WARNING",
+        "message": "Database connection timeout"
+    }
+
+    event = detector.detect(record)
+
+    assert event["reasons"] == [
+        "High response time",
+        "High CPU utilization",
+        "High memory utilization",
+        "Error log detected"
+    ]
+
+
+def test_run_pipeline_processes_data_and_consumes_anomalies():
+    result = run_pipeline(str(Path(__file__).parents[1] / "data" / "service_data.json"))
+
+    assert result["records_processed"] == 10
+    assert len(result["anomalies_detected"]) == 2
+    assert result["events_consumed"] == result["anomalies_detected"]
+
+
 def test_producer_publishes_event():
     topic = EventTopic("anomaly-events")
     producer = EventProducer(topic)
@@ -70,3 +101,20 @@ def test_consumer_receives_event():
     messages = consumer.consume()
 
     assert len(messages) == 1
+
+
+def test_producer_rejects_empty_event():
+    topic = EventTopic("anomaly-events")
+    producer = EventProducer(topic)
+
+    assert producer.publish(None) is False
+    assert topic.get_messages() == []
+
+
+def test_topic_clear_removes_messages():
+    topic = EventTopic("anomaly-events")
+    topic.publish({"type": "ANOMALY"})
+
+    topic.clear()
+
+    assert topic.get_messages() == []
